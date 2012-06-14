@@ -1,0 +1,17 @@
+Name:           Scheme
+Version:        0.0
+Cabal-Version:  >=1.8
+License:        GPL-3
+Author:         Draggor
+Synopsis:       A simple Scheme interpreter
+Build-Type:     Simple
+
+Executable scheme
+        Build-Depends:  base, haskell98, parsec
+        Main-Is:        Main.hs
+        other-modules:  Scheme
+
+Executable schemetest
+        Build-Depends:  base, haskell98, parsec, HUnit
+        Main-Is:        SchemeTest.hs
+        Other-Modules:  Scheme
