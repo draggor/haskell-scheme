@@ -18,7 +18,7 @@ character :: Parser Char
 character = symbol <|> letter <|> digit
 
 escapable :: Parser Char
-escapable = oneOf "\\\"" <|> letter
+escapable = oneOf "\\\"" <|> character
 
 escape :: Parser String
 escape = do char '\\'
@@ -39,14 +39,14 @@ parseString = do char '"'
 
 stringRecurse :: Parser String
 stringRecurse = do x <- many character
-		   y <- escape
+		   y <- liftM concat (many escape)
 		   return $ x ++ y
 
 parseString :: Parser LispVal
 parseString = do char '"'
-		 --x <- many (symbol <|> letter <|> digit) <|> escape --many (noneOf "\"") <|> escape
+		 --x <- many character <|> escape --many (noneOf "\"") <|> escape
 		 x <- stringRecurse
-		 char '"'
+		 --char '"'
 		 return $ String x
 
 parseAtom :: Parser LispVal
