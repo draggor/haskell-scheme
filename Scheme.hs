@@ -46,7 +46,7 @@ parseString :: Parser LispVal
 parseString = do char '"'
 		 --x <- many character <|> escape --many (noneOf "\"") <|> escape
 		 x <- stringRecurse
-		 --char '"'
+		 char '"'
 		 return $ String x
 
 parseAtom :: Parser LispVal
