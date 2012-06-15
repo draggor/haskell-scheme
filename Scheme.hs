@@ -20,16 +20,28 @@ character = symbol <|> letter <|> digit
 escapable :: Parser Char
 escapable = oneOf "\\\"" <|> character
 
+esc :: Parser Char
+esc = do c <- escapable
+	 rc <- case c of
+	 	't' -> '\t'
+		'n' -> '\n'
+		'r' -> '\r'
+		'\\' -> '\\'
+		'\"' -> '\"'
+	 return rc
+
 escape :: Parser String
 escape = do char '\\'
 	    second <- escapable
 	    str <- stringRecurse
-	    return $ ['\\', second] ++ str
+	    return $ [second] ++ str
+	    --return $ ['\\', second] ++ str
 
 spaces :: Parser ()
 spaces = skipMany1 space
 
 {-
+--This is the basic string parser the tutorial gave
 parseString :: Parser LispVal
 parseString = do char '"'
 		 x <- many (noneOf "\"")
@@ -44,6 +56,9 @@ stringRecurse = do x <- many character
 
 parseString :: Parser LispVal
 parseString = do char '"'
+		 --The following line was a first attempt at including escape characters.
+		 --Because this parser doesn't backtrack, it would fail becaues it either stop
+		 --at an escape and parse nothing after, or only parse things without escapes.
 		 --x <- many character <|> escape --many (noneOf "\"") <|> escape
 		 x <- stringRecurse
 		 char '"'
@@ -104,6 +119,7 @@ parseBin :: Parser LispVal
 parseBin = parsePrefixedNum 'b' readBin digitBin
 
 {-
+--These were before I made the nicer functions above
 parseHex :: Parser LispVal
 parseHex = char 'x' >>= \_ -> (liftM (Number . extractFromRead . readHex) $ many1 digitHex)
 
@@ -137,6 +153,7 @@ parseFalse = do char 'f'
 
 readBin :: String -> [(Integer, String)]
 readBin s = [(sum $ zipWith (*) [2^x|x <- [0..]] (map ((+)(-48) . toInteger . fromEnum) $ reverse s), "")]
+--Below was my first attempt.  Above is what I worked on with someone to make it smaller
 --readBin s = [(fst $ foldr (\digit (sum, count) -> (digit ^ count + sum, count+1)) (0, 0) $ map (\c -> case c of '0' -> 0; '1' -> 2) s, "")]
 
 digitBin :: Parser Char
@@ -156,12 +173,14 @@ parsePound = do char '#'
 		parseHex <|> parseDec <|> parseOct <|> parseBin <|> parseTrue <|> parseFalse
 
 {-
+--First basic number parsing
 parseNumber :: Parser LispVal
 parseNumber = do number <- many1 digit
 		 return $ Number (read number)
 -}
 
 {-
+--Another set of versions
 parseNumber :: Parser LispVal
 parseNumber = many1 digit >>= f
 	      where f result = return $ Number (read result)

@@ -15,7 +15,7 @@ tests = test [ "parseDec"	~: "(readExpr 1234)"		~: "Number: 1234"	~=? (Scheme.re
 	       "parseAtom"	~: "(readExpr $sym)"		~: "Atom: $sym"		~=? (Scheme.readExpr "$sym"),
 	       "parseAtom"	~: "(readExpr sym123)"		~: "Atom: sym123"	~=? (Scheme.readExpr "sym123"),
 	       "parseString"	~: "(readExpr \"asdf\")"	~: "String: asdf"	~=? (Scheme.readExpr "\"asdf\""),
-	       "parseString"	~: "(readExpr \"as\\\"hsd\")"	~: "String: as\\\"hsd"	~=? (Scheme.readExpr "\"as\\\"hsd\"") ]
+	       "parseString"	~: "(readExpr \"as\\\"hsd\")"	~: "String: as\"hsd"	~=? (Scheme.readExpr "\"as\\\"hsd\"") ]
 
 main :: IO ()
 main = do c <- runTestTT tests
